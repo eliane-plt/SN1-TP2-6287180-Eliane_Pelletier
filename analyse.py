@@ -51,6 +51,16 @@ print(f"{compteurs(df)} compteurs")
 """section Quelle est la fréquence de prise des données dans le fichier (ex : environ toutes les heures, toutes les 15 minutes, etc.)?"""
 def fréquence(df):
     print()
+    print ("fréquence des prises de données: ")
+    #jours= df["date"].str.slice(8,10).map(int)
+    #mois = df["date"].str.slice(5,7).map(int)
+    jours_tot = df["heure"].str.slice(0,2)
+    minutes = df["heure"].str.slice(0,2).map(int)*60+df["heure"].str.slice(3,5).map(int)
+    df["date_heure"]=jours_tot * 1440 + minutes
+    df=df.sort_values(by="date_heure")
+    df[int_minutes]=df["date_heure"].iloc[1]
+    print(interval,"minutes")
+fréquence(df)
 
 """graphique nombre moyen de passages par heure"""
 """graphique nombre moyen de passages par mois"""
