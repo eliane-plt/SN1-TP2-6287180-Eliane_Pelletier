@@ -55,9 +55,9 @@ def fréquence(df):
     print()
     print ("fréquence des prises de données: ")
 
-    minutes = df["heure"].str.slice(0,2).astype(int)*60+df["heure"].str.slice(3,5).astype(int)
+    minutes = df["heure"].str.slice(0,2).map(int)*60+df["heure"].str.slice(3,5).map(int)
 
-    jours = df["date"].str.slice(8,10).astype(int)
+    jours = df["date"].str.slice(8,10).map(int)
 
     df["date_heure"]= jours * 1440 + minutes
 
@@ -73,7 +73,7 @@ fréquence(df)
 """graphique nombre moyen de passages par heure (colonne)"""
 
 def graph_heure(df):
-    df["heure_simple"]=df["heure"].str.slice(0,2).astype(int)
+    df["heure_simple"]=df["heure"].str.slice(0,2).map(int)
     moyenne = df.groupby("heure_simple")["nb_passages"].mean()
     moyenne.plot(kind="bar")
     plt.xlabel("heure")
@@ -98,7 +98,7 @@ def graph_passages(df):
         11: "novembre",
         12: "decembre",
     }
-    df["numéro_mois"]=df["date"].str.slice(5,7).astype(int)
+    df["numéro_mois"]=df["date"].str.slice(5,7).map(int)
     mois = df.groupby("numéro_mois")["nb_passages"].sum()
     mois.index=mois.index.map(dict_mois)
     mois.plot(kind="bar")
@@ -111,6 +111,33 @@ def graph_passages(df):
 graph_passages(df)
 
 
+""" graphique nombre de passage par heure et par mois"""
+def graph_passages_heure(df):
+    df["heure_simple"]=df["heure"].str.slice(0,2).map(int)
+    df["numéro_mois"] = df["date"].str.slice(5, 7).map(int)
+    df_pivot = df.pivot_table(values = "nb_passages",
+                              index = "heure_simple",
+                              columns = "numéro_mois",
+                              aggfunc="sum")
+    df_pivot.plot()
+    plt.xlabel("heure")
+    plt.ylabel("nombre total de passages")
+    plt.title("nombre total de passages par heure et par  mois")
+    plt.grid(axis = "both", linestyle = "--", linewidth = 0.5)
+    plt.legend(title="mois", labels = ["Jan",
+                                       "Fev",
+                                       "Mar",
+                                       "Avr",
+                                       "Mai",
+                                       "Juin",
+                                       "Juil",
+                                       "Aoû",
+                                       "Sep",
+                                       "Oct",
+                                       "Nov",
+                                       "Déc",])
+    plt.show()
 
-""" graphique nombre de passage par heur et par mois"""
+graph_passages_heure(df)
+
 """graphique localisation des compteur de vélos"""
