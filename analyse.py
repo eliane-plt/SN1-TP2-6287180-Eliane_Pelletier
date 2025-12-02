@@ -1,4 +1,6 @@
 import pandas as pd
+from matplotlib import pyplot as plt
+
 df = pd.read_csv('C:/Users/Eliane Pelletier/Downloads/comptage_velo_2024.csv', low_memory=False) #a changer lorsque à la maison
 df=df.dropna() #nettoyer le fichier
 
@@ -52,17 +54,63 @@ print(f"{compteurs(df)} compteurs")
 def fréquence(df):
     print()
     print ("fréquence des prises de données: ")
-    #jours= df["date"].str.slice(8,10).map(int)
-    #mois = df["date"].str.slice(5,7).map(int)
-    jours_tot = df["heure"].str.slice(0,2)
-    minutes = df["heure"].str.slice(0,2).map(int)*60+df["heure"].str.slice(3,5).map(int)
-    df["date_heure"]=jours_tot * 1440 + minutes
-    df=df.sort_values(by="date_heure")
-    df[int_minutes]=df["date_heure"].iloc[1]
+
+    minutes = df["heure"].str.slice(0,2).astype(int)*60+df["heure"].str.slice(3,5).astype(int)
+
+    jours = df["date"].str.slice(8,10).astype(int)
+
+    df["date_heure"]= jours * 1440 + minutes
+
+    df = df.sort_values(by="date_heure")
+
+    df["diff"] = df["date_heure"].diff()
+
+    interval = df["diff"].mode()[0]
+
     print(interval,"minutes")
 fréquence(df)
 
-"""graphique nombre moyen de passages par heure"""
-"""graphique nombre moyen de passages par mois"""
-"""graphique nombre de passage par heur et par mois"""
+"""graphique nombre moyen de passages par heure (colonne)"""
+
+def graph_heure(df):
+    df["heure_simple"]=df["heure"].str.slice(0,2).astype(int)
+    moyenne = df.groupby("heure_simple")["nb_passages"].mean()
+    moyenne.plot(kind="bar")
+    plt.xlabel("heure")
+    plt.ylabel("comptage moyen par compteur")
+    plt.title("nombre moyen de passage par heure")
+    plt.show()
+graph_heure(df)
+
+"""graphique nombre total de passages par mois"""
+def graph_passages(df):
+    dict_mois = {
+        1: "janvier",
+        2: "février",
+        3: "mars",
+        4: "avril",
+        5: "mai",
+        6: "juin",
+        7: "juillet",
+        8: "aout",
+        9: "septembre",
+        10: "octobre",
+        11: "novembre",
+        12: "decembre",
+    }
+    df["numéro_mois"]=df["date"].str.slice(5,7).astype(int)
+    mois = df.groupby("numéro_mois")["nb_passages"].sum()
+    mois.index=mois.index.map(dict_mois)
+    mois.plot(kind="bar")
+    plt.xlabel("mois")
+    plt.ylabel("nombre total de passages")
+    plt.title("nombre total de passage par mois")
+    plt.show()
+
+
+graph_passages(df)
+
+
+
+""" graphique nombre de passage par heur et par mois"""
 """graphique localisation des compteur de vélos"""
