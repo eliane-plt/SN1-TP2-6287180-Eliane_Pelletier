@@ -141,3 +141,15 @@ def graph_passages_heure(df):
 graph_passages_heure(df)
 
 """graphique localisation des compteur de vélos"""
+
+def graph_localisation(df):
+    x = df.groupby("id_compteur")["longitude"].mean()
+    y = df.groupby("id_compteur")["latitude"].mean()
+    z = df.groupby("id_compteur")["nb_passages"].mean()
+    plt.scatter(x, y, z*10, alpha=0.5)
+    plt.xlabel("longitude")
+    plt.ylabel("latitude")
+    plt.title("Localisation des compteur de vélos\n(taille proportionnelle au nombre moyen de passages)")
+    plt.grid(axis = "both", linestyle = "--", linewidth = 0.5)
+    plt.show()
+graph_localisation(df)
