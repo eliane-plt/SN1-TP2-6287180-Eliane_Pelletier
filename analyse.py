@@ -54,21 +54,17 @@ print(f"{compteurs(df)} compteurs")
 def fréquence(df):
     print()
     print ("fréquence des prises de données: ")
+    df["fréquence"] = df["heure"].str.slice(3,5)
+    valeur = df["fréquence"].unique()
+    valeur_unique = sorted(map(int,valeur))
+    a= valeur_unique[1]
+    b= valeur_unique[2]
+    intervalle = b-a
 
-    minutes = df["heure"].str.slice(0,2).map(int)*60+df["heure"].str.slice(3,5).map(int)
+    print(f" à chaque {intervalle} minutes")
 
-    jours = df["date"].str.slice(8,10).map(int)
-
-    df["date_heure"]= jours * 1440 + minutes
-
-    df = df.sort_values(by="date_heure")
-
-    df["diff"] = df["date_heure"].diff()
-
-    interval = df["diff"].mode()[0]
-
-    print(interval,"minutes")
 fréquence(df)
+
 
 """graphique nombre moyen de passages par heure (colonne)"""
 
