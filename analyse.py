@@ -16,7 +16,7 @@ def variable(df):
         le code retourne une liste de chaînes de caractère qui son les noms des colonnes
     """
 
-    return list(df.columns)
+    return list(df)
 print ("voici les variables présentes dans le jeu de donnnées?: ")
 print(variable(df))
 
@@ -110,27 +110,16 @@ def fréquence(df):
         en analysant la partie des minutes (caractère 3 à 5) de la colonne heure
     variable:
         valeur_unique Tableau des minutes unique sous forme de chaine de caractères
-        valeur_trier: liste triée des minutes uniques sous forme d'entiers
-        a: la deuxième valeur de minute unique
-        b: la troisième valeur de minute unique
-    * J'ai utiliser la deuxième et troisième pour pas avoir de 0*
-    mais techiquement ça devrait revenir au même pour ensuite calculer le delta
-    delta = final - initial (C'était sa ma logique) *
-        intervalle: la différence entre b et a qui est la fréquence en minutes
     valeurs retournées:
-        affiche la fréquence estimé en minutes
+        affiche le tableau des fréquences de prise de donées
     """
 
     print()
     print ("fréquence des prises de données: ")
     df["fréquence"] = df["heure"].str.slice(3,5)
-    valeur_unique = df["fréquence"].unique()
-    valeur_trier = sorted(map(int,valeur_unique))
-    a= valeur_trier[1]
-    b= valeur_trier[2]
-    intervalle = b-a
-
-    print(f" à chaque {intervalle} minutes")
+    valeur = df["fréquence"].unique()
+    print(valeur)
+    print("il est possible de constater qu'il y a un intervalle de 15 minutes entre chaque prise de donner")
 
 fréquence(df)
 
@@ -147,7 +136,7 @@ def graph_heure(df):
     fichiers produits:
         un graphique à barre de Matplolib ou les x sont les heure et y nombre de passage
     """
-    df["heure_simple"]=df["heure"].str.slice(0,2).map(int)
+    df["heure_simple"]=df["heure"].str.slice(0,2)
     moyenne = df.groupby("heure_simple")["nb_passages"].mean()
     moyenne.plot(kind="bar")
     plt.xlabel("heure")
@@ -187,9 +176,8 @@ def graph_passages(df):
         11: "novembre",
         12: "decembre",
     }
-    df["numéro_mois"]=df["date"].str.slice(5,7).map(int)
+    df["numéro_mois"]=df["date"].str.slice(5,7)
     mois = df.groupby("numéro_mois")["nb_passages"].sum()
-    mois.index=mois.index.map(dict_mois)
     mois.plot(kind="bar")
     plt.xlabel("mois")
     plt.ylabel("nombre total de passages")
@@ -208,15 +196,14 @@ def graph_passages_heure(df):
         Cette fonction crée et affiche un graphique linéaire qui montre les évolution pour
         chaque mois du nombre de passage par heure
     variables:
-        df_pivot: Table croisée des heures simple en index et numéro_mois en colonnes
-        qui contient la somme des passage
+        df_pivot: créée un tableau croisée dynamique pour calculer la somme des passage
     fichiers produits:
         Un graphique avec plusieur fonction linéaire qui ont tous le mois en x et nombre
         de passage en y
     """
 
-    df["heure_simple"]=df["heure"].str.slice(0,2).map(int)
-    df["numéro_mois"] = df["date"].str.slice(5, 7).map(int)
+    df["heure_simple"]=df["heure"].str.slice(0,2)
+    df["numéro_mois"] = df["date"].str.slice(5, 7)
     df_pivot = df.pivot_table(values = "nb_passages",
                               index = "heure_simple",
                               columns = "numéro_mois",
