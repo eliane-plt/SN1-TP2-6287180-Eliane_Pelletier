@@ -9,29 +9,30 @@ df=df.dropna()
 
 def variable(df):
 
-    """ section Quelles sont les variables présentes dans le jeu de données?
+    """
     description:
-      retourne la liste des noms des colonnes (variables) présent dans le Dataframe
+      retourne la première ligne des noms des colonnes
     valeurs retournées:
-        le code retourne une liste de chaînes de caractère qui son les noms des colonnes
+        le code retourne les noms de chaque colonnes
     """
 
-    return list(df)
-print ("voici les variables présentes dans le jeu de donnnées?: ")
+    return list(df.head(1))
+print ("voici les variables présentes dans le jeu de donnnées: ")
 print(variable(df))
 
 
 
 def enregistrement(df):
 
-    """ section Combien y a-t-il d'enregistrements (lignes) dans le jeu de données?
+    """
     description:
-        Cette fonction calcule le nombre d'enregistrement de date différente dans le fichier
+        Cette fonction calcule le nombre d'enregistrement de dates différentes dans le fichier
     variable:
         ligne: nombre de ligne différent dans la colomne
     valeurs retournées:
         le code retourne le nombre de ligne mais avec une fonction len pour que ça soit un nombre entier
     """
+
     ligne = df.groupby("date")
     print()
     print(f"nombre d'enregistrements dans le jeu de données: ")
@@ -42,12 +43,12 @@ print(enregistrement(df))
 
 def maximum(df):
 
-    """section Quel est le plus grand nombre de vélos comptés en une seule fois? À quel moment cela s'est-il produit (date, heure, emplacement)?
+    """
     description:
         identification de la ligne qui correspond au plus grand nombre de passage par vélo
     variables:
-        max_decroissante: C'est le nb_passages en ordre décroissant
-        max: C'est la première ligne du max_decroissant
+        max_decroissante: C'est le nombre de passages en ordre décroissant (plus grand au plus petit)
+        max: C'est la première valeur de l'ordre décroissant de la ligne
     valeurs retournées:
         le nombre, la date, l'heure, la longitude et la latitude de la ligne du plus grand nombre de passage sont retourné
     """
@@ -67,14 +68,15 @@ maximum(df)
 
 def total(df):
 
-    """ section Quel est le total de vélos comptés pour l'année 2024?
+    """
     description:
         La fonction calcule la somme totale des vélos comptés pour l'année 2024
     variables:
-        total: C'est ;a somme des valeurs de la colonne nb_passage
+        total: C'est la somme des valeurs de la colonne nb_passage
     valeurs retournées:
         le nombre total de passages enregistré
     """
+
     print()
     print("nombre total de vélos pour l'année 2024:")
     total = df["nb_passages"].sum()
@@ -85,7 +87,7 @@ print(f"{total(df)} vélos")
 
 def compteurs(df):
 
-    """ section Combien y a-t-il de compteurs de vélos différents?
+    """
     description:
         Cette fonction compte le nombre d'itentifiant différent de compteur son présent
         dans la colone id_compteur
@@ -94,6 +96,7 @@ def compteurs(df):
     valeurs retournées:
         Le nombre de compteur différent
     """
+
     print()
     print("nombre de compteurs de vélo différents:")
     compteur = len(df["id_compteur"].unique())
@@ -104,12 +107,12 @@ print(f"{compteurs(df)} compteurs")
 
 def fréquence(df):
 
-    """section Quelle est la fréquence de prise des données dans le fichier (ex : environ toutes les heures, toutes les 15 minutes, etc.)?
+    """
     description:
         Cette fonction trouve l'intervalle de temps (la fréquence) entre chaque données
         en analysant la partie des minutes (caractère 3 à 5) de la colonne heure
     variable:
-        valeur_unique Tableau des minutes unique sous forme de chaine de caractères
+        valeur: tous les valeur différente dans ma liste
     valeurs retournées:
         affiche le tableau des fréquences de prise de donées
     """
@@ -127,21 +130,23 @@ fréquence(df)
 
 def graph_heure(df):
 
-    """graphique nombre moyen de passages par heure (colonne)
+    """
     description:
-        Cette fonction va crée puis affichier un graphique a barre qui montre
+        Cette fonction va crée puis afficher un graphique à barre qui montre
         le nombre de passage moyen par heures (24h) de la journée
     variables:
-        moyennes: série de Pandas qui contient le comptage moyen des passages par heure
+        moyennes: contient le comptage moyen des passages par heure
     fichiers produits:
-        un graphique à barre de Matplolib ou les x sont les heure et y nombre de passage
+        un graphique à barre où les x sont les heures et y le nombre de passages
     """
+
     df["heure_simple"]=df["heure"].str.slice(0,2)
     moyenne = df.groupby("heure_simple")["nb_passages"].mean()
     moyenne.plot(kind="bar")
     plt.xlabel("heure")
     plt.ylabel("comptage moyen par compteur")
     plt.title("nombre moyen de passage par heure")
+
     plt.savefig("graph_heure.png")
     plt.close()
 graph_heure(df)
@@ -150,17 +155,17 @@ graph_heure(df)
 
 def graph_passages(df):
 
-    """graphique nombre total de passages par mois
+    """
     description:
         Cette fonction crée un graphique à barres qui représente le nombre
         total de passages par mois.
     variables:
-        dict_mois: Dictionnaire qui sert a mapper les numéro de mois aux
+        dict_mois: Dictionnaire qui sert a associer les numéro de mois aux
         noms des mois
-        mois: Série Pandas qui contient le total de passage regroupé par numéro
-        de mois
+        mois: contient le total de passage regroupé par numéro
+        de mois et fait la sommation
     fichiers produits:
-        un graphique à barre qui à les mois en x et le nombre total de passage en y
+        un graphique à barre qui à les mois en x et le nombre total de passages en y
     """
     dict_mois = {
         1: "janvier",
@@ -176,12 +181,15 @@ def graph_passages(df):
         11: "novembre",
         12: "decembre",
     }
+
     df["numéro_mois"]=df["date"].str.slice(5,7)
-    mois = df.groupby("numéro_mois")["nb_passages"].sum()
-    mois.plot(kind="bar")
+    mois= dict_mois.values()
+    nb_passage = df.groupby("numéro_mois")["nb_passages"].sum()
+    plt.bar(mois, nb_passage)
     plt.xlabel("mois")
     plt.ylabel("nombre total de passages")
     plt.title("nombre total de passage par mois")
+
     plt.savefig("graph_passages.png")
     plt.close()
 
@@ -191,15 +199,15 @@ graph_passages(df)
 
 def graph_passages_heure(df):
 
-    """ graphique nombre de passage par heure et par mois
+    """
     description:
         Cette fonction crée et affiche un graphique linéaire qui montre les évolution pour
         chaque mois du nombre de passage par heure
     variables:
-        df_pivot: créée un tableau croisée dynamique pour calculer la somme des passage
+        df_pivot: créée un tableau croisée dynamique pour calculer la somme des passages
     fichiers produits:
-        Un graphique avec plusieur fonction linéaire qui ont tous le mois en x et nombre
-        de passage en y
+        Un graphique avec plusieur fonction linéaire qui ont tous le mois en x et nombres
+        de passages en y
     """
 
     df["heure_simple"]=df["heure"].str.slice(0,2)
@@ -234,7 +242,7 @@ graph_passages_heure(df)
 
 def graph_localisation(df):
 
-    """graphique localisation des compteur de vélos
+    """
     description:
         Crée et afficher un nuage de point où la taille des points
         est proportionnelle au nombre moyen de passages par compteur qui
@@ -256,6 +264,8 @@ def graph_localisation(df):
     plt.ylabel("latitude")
     plt.title("Localisation des compteur de vélos\n(taille proportionnelle au nombre moyen de passages)")
     plt.grid(axis = "both", linestyle = "--", linewidth = 0.5)
+
     plt.savefig("graph_localisation.png")
     plt.close()
+
 graph_localisation(df)
